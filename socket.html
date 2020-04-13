@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket</title>
+</head>
+<body>
+    
+    <input type="text" id="name">
+    <br>
+    <br>
+    <textarea rows="5" cols="100" id="message" onkeypress="sendMessage(event)"></textarea>
+
+    <div id="messages" style="white-space: pre-line;"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <script>
+        var socket = io('http://localhost:3000');
+        socket.on('server_hello', receiveMessage);
+        function sendMessage(event){
+            if(event.keyCode === 13 && !event.shiftKey){
+                var name = document.querySelector('#name').value;
+                var text = document.querySelector('#message').value;
+
+                document.querySelector('#message').value = "";
+
+                socket.emit('client_hello', {name, text});
+            }
+        }
+
+        function receiveMessage(data){
+            var element = document.querySelector('#messages');
+            element.innerHTML += `
+                <div>
+                    <b>${data.name} says: </b> ${data.text}
+                </div>
+            `
+        }
+
+    </script>
+</body>
+</html>
